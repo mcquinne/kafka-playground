@@ -1,17 +1,13 @@
 (ns kafka-playground.core
   (:require [ring.adapter.jetty :refer [run-jetty]]
-            [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
-            [kafka-playground.api :refer [kafka-pub-handler]]
-            [kafka-playground.kafka :refer [create-printer-stream]])
+            [kafka-playground.api :refer [main-handler]]
+            [kafka-playground.kafka :refer [topics]]
+            [kafka-playground.stream :refer [create-printer-stream]])
   (:gen-class))
 
-(def main-handler
-  (-> kafka-pub-handler
-      (wrap-json-body {:keywords? true})
-      (wrap-json-response)))
-
 (defn -main
-  "Do the things!"
+  "Start the streams application, then start a ring handler to receive posts"
   [& args]
-  (.start (create-printer-stream))
+  (doseq [topic (vals topics)]
+    (.start (create-printer-stream topic)))
   (run-jetty main-handler {:port 3000}))

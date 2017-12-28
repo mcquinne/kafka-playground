@@ -6,7 +6,10 @@
                  [org.apache.kafka/kafka-streams "1.0.0"]
                  [ring/ring-core "1.6.3"]
                  [ring/ring-json "0.4.0"]
-                 [ring/ring-jetty-adapter "1.6.3"]]
+                 [ring/ring-jetty-adapter "1.6.3"]
+                 [compojure "1.6.0"]
+                 [org.clojure/tools.logging "0.4.0"]
+                 [ch.qos.logback/logback-classic "1.2.3"]]
   :plugins [[lein-ring "0.8.10"]]
   :ring {:handler kafka-playground.core/main-handler}
   :main ^:skip-aot kafka-playground.core
