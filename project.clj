@@ -3,15 +3,12 @@
   :license {:name "GPL v3"
             :url "http://www.gnu.org/licenses/gpl.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.apache.kafka/kafka_2.12 "1.0.0"
-                  :exclusions [javax.jms/jms
-                               com.sun.jdmk/jmxtools
-                               com.sun.jmx/jmxri]]
+                 [org.apache.kafka/kafka-streams "1.0.0"]
                  [ring/ring-core "1.6.3"]
                  [ring/ring-json "0.4.0"]
                  [ring/ring-jetty-adapter "1.6.3"]]
   :plugins [[lein-ring "0.8.10"]]
-  :ring {:handler kafka-playground.core/wrapped-handler}
+  :ring {:handler kafka-playground.core/main-handler}
   :main ^:skip-aot kafka-playground.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}
