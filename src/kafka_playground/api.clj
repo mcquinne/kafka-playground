@@ -5,27 +5,27 @@
             [compojure.route :as route])
   (:gen-class))
 
-(defn upsert-collection-handler
-  "Publishes request body with collection info to kafka"
-  [request]
-  (let [topic (:collection topics)
-        key   "abc"
-        value (str (:body request))]
-    {:status 200
-     :body {:sent (str (publish topic key value))}}))
+(defn publish-record
+  [type record]
+  (if-let [key (str (:id record))]
+    (let [topic (get topics type)
+          msg   (str (assoc record :type (name type)))]
+      {:status 201
+       :body {:created (str (publish topic key msg))}})
+    {:status 400
+     :body {:failure "invalid record... did you provide an id?"}}))
 
-(defn upsert-granule-handler
-  "Publishes request body with granule info to kafka"
+(defn collection-event
   [request]
-  (let [topic (:granule topics)
-        key   "abc"
-        value (str (:body request))]
-    {:status 200
-     :body {:sent (str (publish topic key value))}}))
+  (publish-record :collection (:body request)))
+
+(defn granule-event
+  [request]
+  (publish-record :granule (:body request)))
 
 (defroutes app-routes
-  (PUT "/collection" request upsert-collection-handler)
-  (PUT "/granule" request upsert-granule-handler)
+  (PUT "/collection" request collection-event)
+  (PUT "/granule" request granule-event)
   (route/not-found {:status 404 :body {:message "404, fool."}}))
 
 (def main-handler
