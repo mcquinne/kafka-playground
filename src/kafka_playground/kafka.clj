@@ -3,8 +3,8 @@
            [org.apache.kafka.clients.producer KafkaProducer ProducerConfig ProducerRecord])
   (:gen-class))
 
-(def topics {:collection "raw-collection"
-             :granule    "raw-granule"})
+(def topics {:collection "collection"
+             :granule    "granule"})
 
 (def bootstrap-servers "localhost:9092")
 

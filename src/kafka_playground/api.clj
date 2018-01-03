@@ -1,5 +1,6 @@
 (ns kafka-playground.api
-  (:require [kafka-playground.kafka :refer [topics publish]]
+  (:require [kafka-playground.kafka :as kafka]
+            [kafka-playground.stream :as stream]
             [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
             [compojure.core :refer :all]
             [compojure.route :as route])
@@ -8,24 +9,18 @@
 (defn publish-record
   [type record]
   (if-let [key (str (:id record))]
-    (let [topic (get topics type)
+    (let [topic (get kafka/topics type)
           msg   (str (assoc record :type (name type)))]
       {:status 201
-       :body {:created (str (publish topic key msg))}})
+       :body {:created (str (kafka/publish topic key msg))}})
     {:status 400
      :body {:failure "invalid record... did you provide an id?"}}))
 
-(defn collection-event
-  [request]
-  (publish-record :collection (:body request)))
-
-(defn granule-event
-  [request]
-  (publish-record :granule (:body request)))
-
 (defroutes app-routes
-  (PUT "/collection" request collection-event)
-  (PUT "/granule" request granule-event)
+  (PUT "/collection" request (publish-record :collection (:body request)))
+  (GET "/collection/:id" [id] (stream/get-collection id))
+  (PUT "/granule" request (publish-record :granule (:body request)))
+  (GET "/granule/:id" [id] (stream/get-granule id))
   (route/not-found {:status 404 :body {:message "404, fool."}}))
 
 (def main-handler
