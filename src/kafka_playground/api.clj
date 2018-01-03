@@ -18,9 +18,9 @@
 
 (defroutes app-routes
   (PUT "/collection" request (publish-record :collection (:body request)))
-  (GET "/collection/:id" [id] (stream/get-collection id))
+  (GET "/collection/:id" [id] (stream/get-by-key :collection id))
   (PUT "/granule" request (publish-record :granule (:body request)))
-  (GET "/granule/:id" [id] (stream/get-granule id))
+  (GET "/granule/:id" [id] (stream/get-by-key :granule id))
   (route/not-found {:status 404 :body {:message "404, fool."}}))
 
 (def main-handler

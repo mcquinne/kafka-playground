@@ -7,6 +7,9 @@
   (:require [kafka-playground.kafka :refer [topics bootstrap-servers]])
   (:gen-class))
 
+(def stores {:collection "collection-store"
+             :granule    "granule-store"})
+
 (defn create-stream-config
   [id]
   (StreamsConfig.
@@ -39,16 +42,10 @@
 
 (def app (build-streams-app (app-builder) (create-stream-config "main-app")))
 
-(defn get-collection
-  [key]
-  (println "getting collection with key" key)
-  (-> app
-      (.store "collection-store" (QueryableStoreTypes/keyValueStore))
-      (.get (str key))))
-
-(defn get-granule
-  [key]
-  (println "getting granule with key" key)
-  (-> app
-      (.store "granule-store" (QueryableStoreTypes/keyValueStore))
-      (.get (str key))))
+(defn get-by-key
+  [type key]
+  (let [store (get stores type)]
+    (println "getting record from" store "with key" key)
+    (-> app
+        (.store store (QueryableStoreTypes/keyValueStore))
+        (.get (str key)))))
